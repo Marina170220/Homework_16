@@ -111,7 +111,7 @@ def all_users():
                         phone=user_data['phone'])
         db.session.add(new_user)
         db.session.commit()
-        return "Пользователь добавлен", 201
+        return "", 201
 
 
 @app.route('/users/<int:id_>', methods=["GET", "PUT", "DELETE"])
@@ -126,23 +126,22 @@ def user_by_id(id_: int):
         user = User.query.get(id_)
         db.session.delete(user)
         db.session.commit()
-        return "Пользователь удален", 204
+        return "", 200
 
     elif request.method == "PUT":
-        user_data = json.loads(request.data)
+        user_data = request.json
         new_user = User.query.get(id_)
+        if new_user:
+            new_user.first_name = user_data['first_name']
+            new_user.last_name = user_data['last_name']
+            new_user.age = user_data['age']
+            new_user.email = user_data['email']
+            new_user.ole = user_data['role']
+            new_user.phone = user_data['phone']
 
-        new_user.id = user_data['id'],
-        new_user.first_name = user_data['first_name'],
-        new_user.last_name = user_data['last_name'],
-        new_user.age = user_data['age'],
-        new_user.email = user_data['email'],
-        new_user.ole = user_data['role'],
-        new_user.phone = user_data['phone']
-
-        db.session.add(new_user)
-        db.session.commit()
-        return "Данные пользователя обновлены", 204
+            db.session.add(new_user)
+            db.session.commit()
+            return "", 200
 
 
 @app.route('/orders', methods=["GET", "POST"])
@@ -155,7 +154,7 @@ def all_orders():
         return jsonify(orders_dict_list), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
     elif request.method == "POST":
-        order_data = json.loads(request.data)
+        order_data = request.json
         new_order = Order(id=order_data['id'],
                           name=order_data['name'],
                           description=order_data['description'],
@@ -168,7 +167,7 @@ def all_orders():
 
         db.session.add(new_order)
         db.session.commit()
-        return "Заказ добавлен", 201
+        return "", 201
 
 
 @app.route('/orders/<int:id_>', methods=["GET", "PUT", "DELETE"])
@@ -179,30 +178,28 @@ def order_by_id(id_: int):
             return jsonify(convert_order_to_dict(order)), 200, {'Content-Type': 'application/json; charset=utf-8'}
         abort(400, "Заказ не найден")
 
-
     elif request.method == 'DELETE':
         order = Order.query.get(id_)
         db.session.delete(order)
         db.session.commit()
-        return "Заказ удален", 204
+        return "", 200
 
     elif request.method == "PUT":
-        order_data = json.loads(request.data)
+        order_data = request.json
         new_order = Order.query.get(id_)
+        if new_order:
+            new_order.name = order_data['name']
+            new_order.description = order_data['description']
+            new_order.start_date = order_data['start_date']
+            new_order.end_date = order_data['end_date']
+            new_order.address = order_data['address']
+            new_order.price = order_data['price']
+            new_order.customer_id = order_data['customer_id']
+            new_order.executor_id = order_data['executor_id']
 
-        new_order.id = order_data['id'],
-        new_order.name = order_data['name'],
-        new_order.description = order_data['description'],
-        new_order.start_date = order_data['start_date'],
-        new_order.end_date = order_data['end_date'],
-        new_order.address = order_data['address'],
-        new_order.price = order_data['price'],
-        new_order.customer_id = order_data['customer_id'],
-        new_order.executor_id = order_data['executor_id']
-
-        db.session.add(new_order)
-        db.session.commit()
-        return "Данные заказа обновлены", 204
+            db.session.add(new_order)
+            db.session.commit()
+            return "", 200
 
 
 @app.route('/offers', methods=["GET", "POST"])
@@ -215,13 +212,13 @@ def all_offers():
         return jsonify(offers_dict_list), 200, {'Content-Type': 'application/json; charset=utf-8'}
 
     elif request.method == "POST":
-        offer_data = json.loads(request.data)
+        offer_data = request.json
         new_offer = Offer(id=offer_data['id'],
                           order_id=offer_data['order_id'],
                           executor_id=offer_data['executor_id'])
         db.session.add(new_offer)
         db.session.commit()
-        return "Предложение добавлено", 201
+        return "", 201
 
 
 @app.route('/offers/<int:id_>', methods=["GET", "PUT", "DELETE"])
@@ -232,24 +229,22 @@ def offer_by_id(id_: int):
             return jsonify(convert_offer_to_dict(offer)), 200, {'Content-Type': 'application/json; charset=utf-8'}
         abort(400, "Предложение не найдено")
 
-
     elif request.method == 'DELETE':
         offer = Offer.query.get(id_)
         db.session.delete(offer)
         db.session.commit()
-        return "Предложение удалено", 204
+        return "", 200
 
     elif request.method == "PUT":
-        offer_data = json.loads(request.data)
+        offer_data = request.json
         new_offer = Offer.query.get(id_)
+        if new_offer:
+            new_offer.order_id = offer_data['order_id']
+            new_offer.executor_id = offer_data['executor_id']
 
-        new_offer.id = offer_data['id'],
-        new_offer.order_id = offer_data['order_id'],
-        new_offer.executor_id = offer_data['executor_id']
-
-        db.session.add(new_offer)
-        db.session.commit()
-        return "Данные предложения обновлены", 204
+            db.session.add(new_offer)
+            db.session.commit()
+            return "", 200
 
 
 if __name__ == '__main__':
